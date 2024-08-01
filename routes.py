@@ -84,11 +84,11 @@ def register_routes(app, db):
         response.set_cookie('cookie_name', expires=0)
         return response
 
-    @app.route('/users', methods=['GET', 'POST'])
-    def users():
+    @app.route('/leads', methods=['GET', 'POST'])
+    def leads():
         if request.method == 'GET':
             people = Person.query.all()
-            return render_template('users.html', people=people)
+            return render_template('leads.html', people=people)
         elif request.method == 'POST':
             name = request.form.get('name')
             age = int(request.form.get('age'))
@@ -100,7 +100,7 @@ def register_routes(app, db):
             db.session.commit()
 
             people = people = Person.query.all()
-            return render_template('users.html', people=people)
+            return render_template('leads.html', people=people)
         
         
     @app.route('/delete/<pid>', methods=['DELETE'])
@@ -116,4 +116,4 @@ def register_routes(app, db):
     @app.route('/details/<pid>')
     def details(pid):
         person = Person.query.filter(Person.pid == pid).first()
-        return render_template('user-detail.html', person=person)
+        return render_template('lead-detail.html', person=person)

@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block title %}Index page{% endblock %} {% block content %}
-<p>List of users</p>
+<p>List of Leads</p>
 
 <ul>
   {% for person in people %}
@@ -13,7 +13,7 @@
 
 <p>Add User</p>
 
-<form method="POST" action="{{ url_for('users') }}">
+<form method="POST" action="{{ url_for('leads') }}">
   <label for="name">Name</label>
   <input type="text" name="name" /><br />
   <label for="age">Age</label>
