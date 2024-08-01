@@ -1,8 +1,10 @@
 from flask import render_template, redirect, url_for, request, session, make_response, flash, jsonify
+from flask_login import login_user, logout_user, current_user, login_required
 
 from models import Person
+from models import User
 
-def register_routes(app, db):
+def register_routes(app, db, bcrypt):
 
     @app.route('/')
     def index():
@@ -15,24 +17,53 @@ def register_routes(app, db):
     @app.route('/who-we-are')
     def redirect_endpoint():
         return redirect(url_for('about'))
+    
+    @app.route('/admin')
+    def admin():
+        return render_template('admin.html')
+    
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        if request.method == 'GET':
+            return render_template('register.html')
+        elif request.method == 'POST':
+            username = request.form.get('username')
+            password = request.form.get('password')
+
+            hashed_password = bcrypt.generate_password_hash(password)
+
+            user = User(username=username, password=hashed_password)
+
+            db.session.add(user)
+            db.session.commit()
+            return 'Registration Successful'
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'GET':
             return render_template('login.html')
         elif request.method == 'POST':
-            username = request.form['username']
-            password = request.form['password']
+            username = request.form.get('username')
+            password = request.form.get('password')
 
-            # Add logic to check username and password
+            user = User.query.filter(User.username == username). first()
 
-            if username == 'admin' and password == 'pass':
-                flash('Successful Login!')
-                return render_template('admin.html', message='')
+            if bcrypt.check_password_hash(user.password, password):
+                login_user(user)
+                return redirect(url_for('admin'))
             else:
-                flash('Login Failed! Check Credentials.')
-                return render_template('login.html', message='')
+                return 'Login Failed'
 
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for('index'))
+    
+    @app.route('/restricted')
+    @login_required
+    def restricted():
+        return 'Content Restricted!'
 
     @app.route('/file-upload', methods=['GET', 'POST'])
     def file_upload():

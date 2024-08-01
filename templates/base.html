@@ -22,7 +22,9 @@
     {% endif %} {% endwith %}
 
     <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('leads') }}">Leads</a>
     <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('register') }}">Register</a>
     {% block content %}{% endblock %}
 
     <script
